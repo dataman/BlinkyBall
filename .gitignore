@@ -163,4 +163,5 @@ pip-log.txt
 .DS_Store
 
 # Eagle crap
-*.#*
+*.b#*
+*.s#*
