@@ -1,0 +1,304 @@
+   1               		.file	"BlinkyBall.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.section	.init3,"ax",@progbits
+   9               	.global	init
+  11               	init:
+  12               	/* prologue: naked */
+  13               	/* frame size = 0 */
+  14 0000 80E8      		ldi r24,lo8(-128)
+  15 0002 88B9      		out 40-32,r24
+  16 0004 8DE3      		ldi r24,lo8(61)
+  17 0006 84BB      		out 52-32,r24
+  18 0008 04B6      		in __tmp_reg__,84-32
+  19 000a 00FC      		sbrc __tmp_reg__,0
+  20 000c 00C0      		rjmp .L5
+  21               	.L2:
+  22 000e 04B6      		in __tmp_reg__,84-32
+  23 0010 01FE      		sbrs __tmp_reg__,1
+  24 0012 00C0      		rjmp .L3
+  25 0014 8091 0000 		lds r24,mode
+  26 0018 8F5F      		subi r24,lo8(-(1))
+  27 001a 8093 0000 		sts mode,r24
+  28 001e 8091 0000 		lds r24,mode
+  29 0022 8430      		cpi r24,lo8(4)
+  30 0024 00F0      		brlo .L3
+  31               	.L5:
+  32 0026 1092 0000 		sts mode,__zero_reg__
+  33               	.L3:
+  34 002a 14BE      		out 84-32,__zero_reg__
+  35 002c 8DE1      		ldi r24,lo8(29)
+  36 002e 88BB      		out 56-32,r24
+  37 0030 87BB      		out 55-32,r24
+  38 0032 81E0      		ldi r24,lo8(1)
+  39 0034 83BF      		out 83-32,r24
+  40 0036 82E0      		ldi r24,lo8(2)
+  41 0038 89BF      		out 89-32,r24
+  42               	/* #APP */
+  43               	 ;  89 "BlinkyBall.c" 1
+  44 003a 7894      		sei
+  45               	 ;  0 "" 2
+  46               	/* epilogue start */
+  47               	/* #NOAPP */
+  49               		.text
+  50               	.global	delay
+  52               	delay:
+  53               	/* prologue: function */
+  54               	/* frame size = 0 */
+  55 0000 8093 0000 		sts downcounter,r24
+  56 0004 90E6      		ldi r25,lo8(96)
+  57 0006 00C0      		rjmp .L7
+  58               	.L8:
+  59 0008 95BF      		out 85-32,r25
+  60               	/* #APP */
+  61               	 ;  104 "BlinkyBall.c" 1
+  62 000a 8895      		sleep
+  63               	 ;  0 "" 2
+  64               	/* #NOAPP */
+  65               	.L7:
+  66 000c 8091 0000 		lds r24,downcounter
+  67 0010 8823      		tst r24
+  68 0012 01F4      		brne .L8
+  69               	/* epilogue start */
+  70 0014 0895      		ret
+  72               	.global	prand
+  74               	prand:
+  75               	/* prologue: function */
+  76               	/* frame size = 0 */
+  77 0016 8091 0000 		lds r24,prand_value.1254
+  78 001a 9091 0000 		lds r25,(prand_value.1254)+1
+  79 001e 9C01      		movw r18,r24
+  80 0020 2170      		andi r18,lo8(1)
+  81 0022 3070      		andi r19,hi8(1)
+  82 0024 3095      		com r19
+  83 0026 2195      		neg r18
+  84 0028 3F4F      		sbci r19,lo8(-1)
+  85 002a 2170      		andi r18,lo8(-12287)
+  86 002c 307D      		andi r19,hi8(-12287)
+  87 002e 9695      		lsr r25
+  88 0030 8795      		ror r24
+  89 0032 2827      		eor r18,r24
+  90 0034 3927      		eor r19,r25
+  91 0036 3093 0000 		sts (prand_value.1254)+1,r19
+  92 003a 2093 0000 		sts prand_value.1254,r18
+  93 003e C901      		movw r24,r18
+  94               	/* epilogue start */
+  95 0040 0895      		ret
+  97               	.global	sleep
+  99               	sleep:
+ 100               	/* prologue: function */
+ 101               	/* frame size = 0 */
+ 102 0042 8FE1      		ldi r24,lo8(31)
+ 103 0044 88BB      		out 56-32,r24
+ 104               	/* #APP */
+ 105               	 ;  171 "BlinkyBall.c" 1
+ 106 0046 F894      		cli
+ 107               	 ;  0 "" 2
+ 108               	/* #NOAPP */
+ 109 0048 83E0      		ldi r24,lo8(3)
+ 110 004a 8CBF      		out 92-32,r24
+ 111 004c 80BF      		out 80-32,r24
+ 112 004e 82E0      		ldi r24,lo8(2)
+ 113 0050 80BF      		out 80-32,r24
+ 114 0052 80E7      		ldi r24,lo8(112)
+ 115 0054 85BF      		out 85-32,r24
+ 116               	/* #APP */
+ 117               	 ;  176 "BlinkyBall.c" 1
+ 118 0056 8895      		sleep
+ 119               	 ;  0 "" 2
+ 120               	/* epilogue start */
+ 121               	/* #NOAPP */
+ 122 0058 0895      		ret
+ 124               	.global	Blink
+ 126               	Blink:
+ 127 005a 0F93      		push r16
+ 128 005c 1F93      		push r17
+ 129 005e CF93      		push r28
+ 130 0060 DF93      		push r29
+ 131               	/* prologue: function */
+ 132               	/* frame size = 0 */
+ 133 0062 EC01      		movw r28,r24
+ 134 0064 9093 0000 		sts (max)+1,r25
+ 135 0068 8093 0000 		sts max,r24
+ 136 006c 9093 0000 		sts (loop)+1,r25
+ 137 0070 8093 0000 		sts loop,r24
+ 138 0074 81E0      		ldi r24,lo8(1)
+ 139 0076 90E0      		ldi r25,hi8(1)
+ 140 0078 9093 0000 		sts (reset)+1,r25
+ 141 007c 8093 0000 		sts reset,r24
+ 142 0080 02E3      		ldi r16,lo8(50)
+ 143 0082 10E6      		ldi r17,lo8(96)
+ 144               	.L23:
+ 145 0084 8091 0000 		lds r24,reset
+ 146 0088 9091 0000 		lds r25,(reset)+1
+ 147 008c 0197      		sbiw r24,1
+ 148 008e 9093 0000 		sts (reset)+1,r25
+ 149 0092 8093 0000 		sts reset,r24
+ 150 0096 892B      		or r24,r25
+ 151 0098 01F4      		brne .L15
+ 152 009a 00D0      		rcall prand
+ 153 009c 8260      		ori r24,lo8(2)
+ 154 009e 88BB      		out 56-32,r24
+ 155 00a0 D093 0000 		sts (reset)+1,r29
+ 156 00a4 C093 0000 		sts reset,r28
+ 157 00a8 D093 0000 		sts (loop)+1,r29
+ 158 00ac C093 0000 		sts loop,r28
+ 159               	.L15:
+ 160 00b0 0093 0000 		sts downcounter,r16
+ 161 00b4 00C0      		rjmp .L16
+ 162               	.L17:
+ 163 00b6 15BF      		out 85-32,r17
+ 164               	/* #APP */
+ 165               	 ;  104 "BlinkyBall.c" 1
+ 166 00b8 8895      		sleep
+ 167               	 ;  0 "" 2
+ 168               	/* #NOAPP */
+ 169               	.L16:
+ 170 00ba 8091 0000 		lds r24,downcounter
+ 171 00be 8823      		tst r24
+ 172 00c0 01F4      		brne .L17
+ 173 00c2 8091 0000 		lds r24,interrupt
+ 174 00c6 9091 0000 		lds r25,(interrupt)+1
+ 175 00ca 892B      		or r24,r25
+ 176 00cc 01F0      		breq .L18
+ 177 00ce 8091 0000 		lds r24,max
+ 178 00d2 9091 0000 		lds r25,(max)+1
+ 179 00d6 9093 0000 		sts (loop)+1,r25
+ 180 00da 8093 0000 		sts loop,r24
+ 181 00de 1092 0000 		sts (interrupt)+1,__zero_reg__
+ 182 00e2 1092 0000 		sts interrupt,__zero_reg__
+ 183               	.L18:
+ 184 00e6 8091 0000 		lds r24,loop
+ 185 00ea 9091 0000 		lds r25,(loop)+1
+ 186 00ee 0197      		sbiw r24,1
+ 187 00f0 9093 0000 		sts (loop)+1,r25
+ 188 00f4 8093 0000 		sts loop,r24
+ 189 00f8 892B      		or r24,r25
+ 190 00fa 01F4      		brne .L23
+ 191 00fc 00D0      		rcall sleep
+ 192 00fe 8091 0000 		lds r24,max
+ 193 0102 9091 0000 		lds r25,(max)+1
+ 194 0106 9093 0000 		sts (loop)+1,r25
+ 195 010a 8093 0000 		sts loop,r24
+ 196 010e 00C0      		rjmp .L23
+ 198               	.global	main
+ 200               	main:
+ 201               	/* prologue: function */
+ 202               	/* frame size = 0 */
+ 203 0110 8091 0000 		lds r24,mode
+ 204 0114 8130      		cpi r24,lo8(1)
+ 205 0116 01F0      		breq .L27
+ 206 0118 8130      		cpi r24,lo8(1)
+ 207 011a 00F0      		brlo .L26
+ 208 011c 8230      		cpi r24,lo8(2)
+ 209 011e 01F0      		breq .L28
+ 210 0120 8330      		cpi r24,lo8(3)
+ 211 0122 01F4      		brne .L30
+ 212 0124 00C0      		rjmp .L31
+ 213               	.L26:
+ 214 0126 84E6      		ldi r24,lo8(100)
+ 215 0128 90E0      		ldi r25,hi8(100)
+ 216 012a 00C0      		rjmp .L32
+ 217               	.L27:
+ 218 012c 84EF      		ldi r24,lo8(500)
+ 219 012e 91E0      		ldi r25,hi8(500)
+ 220 0130 00C0      		rjmp .L32
+ 221               	.L28:
+ 222 0132 88EE      		ldi r24,lo8(1000)
+ 223 0134 93E0      		ldi r25,hi8(1000)
+ 224               	.L32:
+ 225 0136 00D0      		rcall Blink
+ 226 0138 0895      		ret
+ 227               	.L31:
+ 228 013a 00D0      		rcall sleep
+ 229 013c 00C0      		rjmp .L31
+ 230               	.L30:
+ 231 013e 0895      		ret
+ 233               	.global	__vector_3
+ 235               	__vector_3:
+ 236 0140 1F92      		push __zero_reg__
+ 237 0142 0F92      		push r0
+ 238 0144 0FB6      		in r0,__SREG__
+ 239 0146 0F92      		push r0
+ 240 0148 1124      		clr __zero_reg__
+ 241 014a 8F93      		push r24
+ 242               	/* prologue: Signal */
+ 243               	/* frame size = 0 */
+ 244 014c 8091 0000 		lds r24,downcounter
+ 245 0150 8150      		subi r24,lo8(-(-1))
+ 246 0152 8093 0000 		sts downcounter,r24
+ 247               	/* epilogue start */
+ 248 0156 8F91      		pop r24
+ 249 0158 0F90      		pop r0
+ 250 015a 0FBE      		out __SREG__,r0
+ 251 015c 0F90      		pop r0
+ 252 015e 1F90      		pop __zero_reg__
+ 253 0160 1895      		reti
+ 255               	.global	INT1_vect
+ 257               	INT1_vect:
+ 258 0162 1F92      		push __zero_reg__
+ 259 0164 0F92      		push r0
+ 260 0166 0FB6      		in r0,__SREG__
+ 261 0168 0F92      		push r0
+ 262 016a 1124      		clr __zero_reg__
+ 263 016c 8F93      		push r24
+ 264 016e 9F93      		push r25
+ 265               	/* prologue: Signal */
+ 266               	/* frame size = 0 */
+ 267 0170 81E0      		ldi r24,lo8(1)
+ 268 0172 90E0      		ldi r25,hi8(1)
+ 269 0174 9093 0000 		sts (interrupt)+1,r25
+ 270 0178 8093 0000 		sts interrupt,r24
+ 271               	/* epilogue start */
+ 272 017c 9F91      		pop r25
+ 273 017e 8F91      		pop r24
+ 274 0180 0F90      		pop r0
+ 275 0182 0FBE      		out __SREG__,r0
+ 276 0184 0F90      		pop r0
+ 277 0186 1F90      		pop __zero_reg__
+ 278 0188 1895      		reti
+ 280               		.data
+ 283               	prand_value.1254:
+ 284 0000 1EDA      		.word	-9698
+ 285               		.comm loop,2,1
+ 286               		.comm interrupt,2,1
+ 287               		.comm reset,2,1
+ 288               		.comm max,2,1
+ 289               	.global	mode
+ 290               		.section	.noinit,"aw",@nobits
+ 293               	mode:
+ 294 0000 00        		.skip 1,0
+ 295               		.comm downcounter,1,1
+ 296               	.global __do_copy_data
+ 297               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 BlinkyBall.c
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:2      *ABS*:0000003f __SREG__
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:3      *ABS*:0000003e __SP_H__
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:4      *ABS*:0000003d __SP_L__
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:5      *ABS*:00000034 __CCP__
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:11     .init3:00000000 init
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:293    .noinit:00000000 mode
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:52     .text:00000000 delay
+                            *COM*:00000001 downcounter
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:74     .text:00000016 prand
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:283    .data:00000000 prand_value.1254
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:99     .text:00000042 sleep
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:126    .text:0000005a Blink
+                            *COM*:00000002 max
+                            *COM*:00000002 loop
+                            *COM*:00000002 reset
+                            *COM*:00000002 interrupt
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:200    .text:00000110 main
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:235    .text:00000140 __vector_3
+C:\Users\CRJones\AppData\Local\Temp/ccXMqRkN.s:257    .text:00000162 INT1_vect
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
