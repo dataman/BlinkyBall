@@ -52,7 +52,7 @@ void init(void) {
 	// turn off unused peripherals to save power
 
 	ACSR = 1<<ACD; // disable analog comparator
-	DIDR0 = 1<<ADC3D | 1<<ADC2D | 1<<ADC1D | 1<<ADC0D | 0<<AIN1D | 1<<AIN0D; // disable all digital inputs
+	DIDR0 = 1<<ADC3D | 1<<ADC2D | 1<<ADC1D | 1<<ADC0D | 0<<AIN1D | 1<<AIN0D; // disable digital inputs
 
 	// determine cause of device reset;  act accordingly
 
@@ -85,6 +85,10 @@ void init(void) {
 
 	TCCR0B = 0<<FOC0A | 0<<FOC0B | 0<<WGM02 | 0<<CS02 | 0<<CS01 | 1<<CS00;
 	TIMSK0 = 0<<OCIE0B | 0<<OCIE0A | 1<<TOIE0; // interrupts
+
+	// Enable tilt switch interrupt
+	MCUCR = 1 << ISC01;  //set INT0 as falling edge trigger     
+    GIMSK = 1 << INT0;   //enable INTO in global interrupt mask
 
 	sei(); // enable global interrupts
 }
