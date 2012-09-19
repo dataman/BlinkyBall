@@ -1,19 +1,11 @@
-// tinyCylon2.c
-// revised firmware for tinyCylon LED scanner
-// written by dale wheat - 18 november 2008
-// based on behavior of original tinyCylon firmware
-
-// notes:
+// BlinkyBall.c
+// firmware for BlinkyBall 
+// based on Dale Wheat's Tiny Cylon
 
 // device = ATtiny13A
 // clock = 128 KHz internal RC oscillator
 // max ISP frequency ~20 KHz
 // brown-out detect = 1.8 V
-
-#define F_CPU 1000000UL  // 1 MHz
-//#define F_CPU 14.7456E6
-#include <util/delay.h>
-
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -39,13 +31,23 @@ typedef enum {
 	MODE_2,  // Changes per tilt
 	MODE_MAX // off
 } MODE;
-
-unsigned int loop;               // loop counter 
-volatile unsigned int interrupt; // interrupt flag
-unsigned int reset;              // tracks reset to next color change
-unsigned int max;                // where to reset to
-
 volatile MODE mode __attribute__ ((section (".noinit")));
+
+volatile unsigned int interrupt; // interrupt flag
+
+const unsigned char bbits[] = {
+    0b00000010,
+	0b00000011,
+	0b00001010,
+	0b00010010,
+	0b00001011,
+	0b00010011,
+	0b00011010
+};
+
+// PROTOTYPES
+void blink (unsigned char idelay);
+void sleep(unsigned char canwake);
 
 ///////////////////////////////////////////////////////////////////////////////
 // init() - initialize everything
@@ -115,52 +117,43 @@ void delay(unsigned char n) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// pseudorandom number generator
+// main() - main program function
 ///////////////////////////////////////////////////////////////////////////////
-
-unsigned int prand(void) {
-
-    static unsigned int prand_value = 0xDA1E; // randomly seeded ;)
-    
-    prand_value = (prand_value >> 1) ^ (-(prand_value & 1) & 0xd001);
-
-    return prand_value;
+int main(void) {
+	switch(mode) {
+	case MODE_0: 
+		blink(25);
+		break;
+	case MODE_1:
+		blink(100);
+		break;
+	case MODE_2:
+		blink(255);
+		break;
+	case MODE_MAX:
+		sleep(0);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// main() - main program function
+// blink(delay) - blinks with interspacing delay
 ///////////////////////////////////////////////////////////////////////////////
-
-
-
-int main(void) {
-
-interrupt = 0;
-
-const unsigned char bbits[] = {
-    0b00000010,
-	0b00000011,
-	0b00001010,
-	0b00010010,
-	0b00001011,
-	0b00010011,
-	0b00011010
-};
-
-unsigned char i=sizeof(bbits);
-
+void blink (unsigned char idelay) {
+ interrupt = 0;
+ unsigned char i=sizeof(bbits);
  while (1) {
   if (++i >= sizeof(bbits)) i=0;
   PORTB = bbits[i];
-  _delay_ms(100);
-  while (!interrupt) sleep();
+  delay(idelay);
+  while (!interrupt) sleep(1);
   interrupt--;
  }
-
-return 0;
 }
 
-void sleep() {
+///////////////////////////////////////////////////////////////////////////////
+// sleep(canwake) - 1/0 Enables or disables can wake on int0
+///////////////////////////////////////////////////////////////////////////////
+void sleep(unsigned char canwake) {
 	PORTB = 0b00011011; // all LEDs off
 	// deepest sleep mode
 	cli(); // disable interrupts
@@ -168,22 +161,25 @@ void sleep() {
 	BODCR = 1<<BODS | 1<<BODSE; // enable BOD disable during sleep, step 1
 	BODCR = 1<<BODS | 0<<BODSE; // step 2
 	MCUCR = 1<<PUD | 1<<SE | 1<<SM1 | 0<<SM0 | 0<<ISC01 | 0<<ISC00; // select "power down" mode
-    // Enable tilt switch interrupt
-	MCUCR = 1 << ISC01;  //set INT0 as falling edge trigger     
-    GIMSK = 1 << INT0;   //enable INTO in global interrupt mask
-	sei(); // enable global interrupts
+	if (canwake) {
+     // Enable tilt switch interrupt
+	 MCUCR = 1 << ISC01;  //set INT0 as falling edge trigger     
+     GIMSK = 1 << INT0;   //enable INTO in global interrupt mask
+	 sei(); // enable global interrupts
+	}
 	asm("sleep"); // go to sleep to save power
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // timer/counter0 overflow interrupt handler
 ///////////////////////////////////////////////////////////////////////////////
-
 ISR(TIM0_OVF_vect) {
-
 	downcounter--; // decrement downcounter for delay functions
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// INT0 interrupt vector, activated by INT0 tilt.
+///////////////////////////////////////////////////////////////////////////////
 ISR(INT0_vect) {
 	interrupt = 25;
 }
