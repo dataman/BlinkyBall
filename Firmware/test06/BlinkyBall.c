@@ -7,6 +7,9 @@
 // max ISP frequency ~20 KHz
 // brown-out detect = 1.8 V
 
+// Code behavior specific defines
+#define MAXBLINK 25     // How many times to flash between tilts
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -134,13 +137,13 @@ int main(void) {
 // blink(delay) - blinks with interspacing delay
 ///////////////////////////////////////////////////////////////////////////////
 void blink (unsigned char idelay) {
- interrupt = 0;
+ interrupt = MAXTILT;
  unsigned char i=sizeof(bbits);
  while (1) {
   if (++i >= sizeof(bbits)) i=0;
   PORTB = bbits[i];
   delay(idelay);
-  while (!interrupt) sleep(1);
+  while (!interrupt) sleep(1); 
   interrupt--;
  }
 }
@@ -170,7 +173,6 @@ void sleep(unsigned char canwake) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ISR(TIM0_OVF_vect) {
-
 	downcounter--; // decrement downcounter for delay functions
 }
 
@@ -178,7 +180,7 @@ ISR(TIM0_OVF_vect) {
 // INT0 interrupt vector, activated by INT0 tilt.
 ///////////////////////////////////////////////////////////////////////////////
 ISR(INT0_vect) {
-	interrupt = 25;
+	interrupt = MAXTILT;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
