@@ -140,14 +140,11 @@ unsigned int prand(void) {
 int main(void) {
 
 const unsigned char bbits[] = {
-	0b00000000,
-	0b00000001,
-	0b00001000,
-	0b00010000,
-	0b00001001,
-	0b00010001,
-	0b00011000,
-	0b00011001
+    //76543210
+	0b00011011,
+	0b00011010,
+	0b00010011,
+	0b00001011,
 	};
 
 unsigned char i=sizeof(bbits);

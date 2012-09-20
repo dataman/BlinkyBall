@@ -10,8 +10,11 @@ c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
 Allocating common symbols
 Common symbol       size              file
 
-downcounter         0x2               BlinkyBall.o
-interrupt           0x1               BlinkyBall.o
+downcounter         0x1               BlinkyBall.o
+reset               0x2               BlinkyBall.o
+loop                0x2               BlinkyBall.o
+max                 0x2               BlinkyBall.o
+interrupt           0x2               BlinkyBall.o
 
 Memory Configuration
 
@@ -123,7 +126,7 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x1b2
+.text           0x00000000      0x186
  *(.vectors)
  .vectors       0x00000000       0x14 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
                 0x00000000                __vectors
@@ -159,14 +162,14 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a
  .init2         0x00000014        0x8 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
  *(.init2)
  *(.init3)
- .init3         0x0000001c       0x44 BlinkyBall.o
+ .init3         0x0000001c       0x3c BlinkyBall.o
                 0x0000001c                init
  *(.init3)
  *(.init4)
- .init4         0x00000060       0x16 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
-                0x00000060                __do_copy_data
- .init4         0x00000076       0x10 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
-                0x00000076                __do_clear_bss
+ .init4         0x00000058       0x16 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
+                0x00000058                __do_copy_data
+ .init4         0x0000006e       0x10 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
+                0x0000006e                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
@@ -177,38 +180,38 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x00000086        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
+ .init9         0x0000007e        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
  *(.init9)
  *(.text)
- .text          0x0000008a        0x2 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
-                0x0000008a                __bad_interrupt
-                0x0000008a                __vector_6
-                0x0000008a                __vector_7
-                0x0000008a                __vector_5
-                0x0000008a                __vector_4
-                0x0000008a                __vector_9
-                0x0000008a                __vector_2
-                0x0000008a                __vector_8
- .text          0x0000008c      0x122 BlinkyBall.o
-                0x00000190                __vector_1
-                0x000000aa                sleep
-                0x00000162                __vector_3
-                0x000000d2                blink
-                0x0000012e                main
-                0x0000008c                delay
- .text          0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
- .text          0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
- .text          0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
-                0x000001ae                . = ALIGN (0x2)
+ .text          0x00000082        0x2 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
+                0x00000082                __bad_interrupt
+                0x00000082                __vector_6
+                0x00000082                __vector_7
+                0x00000082                __vector_5
+                0x00000082                __vector_4
+                0x00000082                __vector_9
+                0x00000082                __vector_2
+                0x00000082                __vector_8
+ .text          0x00000084       0xfe BlinkyBall.o
+                0x0000015a                __vector_1
+                0x0000009a                prand
+                0x000000c6                sleep
+                0x00000138                __vector_3
+                0x000000e6                main
+                0x00000084                delay
+ .text          0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
+ .text          0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
+ .text          0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
+                0x00000182                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
- .text.libgcc   0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
- .text.libgcc   0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
-                0x000001ae                . = ALIGN (0x2)
+ .text.libgcc   0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
+ .text.libgcc   0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
+                0x00000182                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000001ae        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
-                0x000001ae                exit
-                0x000001ae                _exit
+ .fini9         0x00000182        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
+                0x00000182                exit
+                0x00000182                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -227,53 +230,55 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000001ae        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
+ .fini0         0x00000182        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
  *(.fini0)
-                0x000001b2                _etext = .
+                0x00000186                _etext = .
 
-.data           0x00800060        0x4 load address 0x000001b2
+.data           0x00800060        0xa load address 0x00000186
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
- .data          0x00800060        0x3 BlinkyBall.o
-                0x00800060                bbits
- .data          0x00800063        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
- .data          0x00800063        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
- .data          0x00800063        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
+ .data          0x00800060        0x9 BlinkyBall.o
+ .data          0x00800069        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
+ .data          0x00800069        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
+ .data          0x00800069        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.d*)
-                0x00800064                . = ALIGN (0x2)
- *fill*         0x00800063        0x1 00
-                0x00800064                _edata = .
-                0x00800064                PROVIDE (__data_end, .)
+                0x0080006a                . = ALIGN (0x2)
+ *fill*         0x00800069        0x1 00
+                0x0080006a                _edata = .
+                0x0080006a                PROVIDE (__data_end, .)
 
-.bss            0x00800064        0x3
-                0x00800064                PROVIDE (__bss_start, .)
+.bss            0x0080006a        0x9
+                0x0080006a                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x00800064        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
- .bss           0x00800064        0x0 BlinkyBall.o
- .bss           0x00800064        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
- .bss           0x00800064        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
- .bss           0x00800064        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
+ .bss           0x0080006a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
+ .bss           0x0080006a        0x0 BlinkyBall.o
+ .bss           0x0080006a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
+ .bss           0x0080006a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_copy_data.o)
+ .bss           0x0080006a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_clear_bss.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x00800064        0x3 BlinkyBall.o
-                0x00800064                downcounter
-                0x00800066                interrupt
-                0x00800067                PROVIDE (__bss_end, .)
-                0x000001b2                __data_load_start = LOADADDR (.data)
-                0x000001b6                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0080006a        0x9 BlinkyBall.o
+                0x0080006a                downcounter
+                0x0080006b                reset
+                0x0080006d                loop
+                0x0080006f                max
+                0x00800071                interrupt
+                0x00800073                PROVIDE (__bss_end, .)
+                0x00000186                __data_load_start = LOADADDR (.data)
+                0x00000190                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800067        0x1
-                0x00800067                PROVIDE (__noinit_start, .)
+.noinit         0x00800073        0x1
+                0x00800073                PROVIDE (__noinit_start, .)
  *(.noinit*)
- .noinit        0x00800067        0x1 BlinkyBall.o
-                0x00800067                mode
-                0x00800068                PROVIDE (__noinit_end, .)
-                0x00800068                _end = .
-                0x00800068                PROVIDE (__heap_start, .)
+ .noinit        0x00800073        0x1 BlinkyBall.o
+                0x00800073                mode
+                0x00800074                PROVIDE (__noinit_end, .)
+                0x00800074                _end = .
+                0x00800074                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -384,15 +389,17 @@ __vector_9                                        c:/winavr-20100110/bin/../lib/
 __vector_default                                  c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
 __vectors                                         c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
 _exit                                             c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
-bbits                                             BlinkyBall.o
-blink                                             BlinkyBall.o
 delay                                             BlinkyBall.o
 downcounter                                       BlinkyBall.o
 exit                                              c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr25\libgcc.a(_exit.o)
                                                   c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
 init                                              BlinkyBall.o
 interrupt                                         BlinkyBall.o
+loop                                              BlinkyBall.o
 main                                              BlinkyBall.o
                                                   c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr25/crttn13.o
+max                                               BlinkyBall.o
 mode                                              BlinkyBall.o
+prand                                             BlinkyBall.o
+reset                                             BlinkyBall.o
 sleep                                             BlinkyBall.o

@@ -1,17 +1,23 @@
-// BlinkyBall.c
-// firmware for BlinkyBall 
-// based on Dale Wheat's Tiny Cylon
+// tinyCylon2.c
+// revised firmware for tinyCylon LED scanner
+// written by dale wheat - 18 november 2008
+// based on behavior of original tinyCylon firmware
+
+// notes:
 
 // device = ATtiny13A
 // clock = 128 KHz internal RC oscillator
 // max ISP frequency ~20 KHz
 // brown-out detect = 1.8 V
 
-// Code behavior specific defines
-#define MAXTILT 25     // How many times to flash between tilts
+#define F_CPU 1000000UL  // 1 MHz
+//#define F_CPU 14.7456E6
+#include <util/delay.h>
+
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/delay.h>
 
 // These registers are available on the ATtiny13A but not the original ATtiny13
 
@@ -33,20 +39,13 @@ typedef enum {
 	MODE_2,  // Changes per tilt
 	MODE_MAX // off
 } MODE;
+
+unsigned int loop;               // loop counter 
+volatile unsigned int interrupt; // interrupt flag
+unsigned int reset;              // tracks reset to next color change
+unsigned int max;                // where to reset to
+
 volatile MODE mode __attribute__ ((section (".noinit")));
-
-volatile unsigned char interrupt; // interrupt flag
-
-const unsigned char bbits[] = {
-    //76543210
-    0b00011010,
-    0b00001011,
-    0b00010011
-};
-
-// PROTOTYPES
-void blink (unsigned int idelay);
-void sleep(unsigned char canwake);
 
 ///////////////////////////////////////////////////////////////////////////////
 // init() - initialize everything
@@ -59,7 +58,7 @@ void init(void) {
 	// turn off unused peripherals to save power
 
 	ACSR = 1<<ACD; // disable analog comparator
-	DIDR0 = 1<<ADC3D | 1<<ADC2D | 1<<ADC1D | 1<<ADC0D | 1<<AIN1D | 1<<AIN0D; // disable all digital inputs
+	DIDR0 = 1<<ADC3D | 1<<ADC2D | 1<<ADC1D | 1<<ADC0D | 0<<AIN1D | 1<<AIN0D; // disable digital inputs
 
 	// determine cause of device reset;  act accordingly
 
@@ -88,7 +87,7 @@ void init(void) {
  	//	PB2		7		SCK/ADC1/T0/PCINT2			D3 output, n/c
 	//  VCC     8       POWER
 
-	PORTB = 0<<PORTB5 | 1<<PORTB4 | 1<<PORTB3 | 1<<PORTB2 | 1<<PORTB1 | 1<<PORTB0;
+	PORTB = 0<<PORTB5 | 1<<PORTB4 | 1<<PORTB3 | 1<<PORTB2 | 0<<PORTB1 | 1<<PORTB0;
 	DDRB = 0<<DDB5 | 1<<DDB4 | 1<<DDB3 | 1<<DDB2 | 0<<DDB1 | 1<<DDB0;
 
 	// initialize ATtiny13 timer/counter
@@ -96,9 +95,6 @@ void init(void) {
 	TCCR0B = 0<<FOC0A | 0<<FOC0B | 0<<WGM02 | 0<<CS02 | 0<<CS01 | 1<<CS00;
 	TIMSK0 = 0<<OCIE0B | 0<<OCIE0A | 1<<TOIE0; // interrupts
 
-	MCUCR = 1 << ISC01;  //set INT0 as falling edge trigger     
-    GIMSK = 1 << INT0;   //enable INTO in global interrupt mask
-	 
 	sei(); // enable global interrupts
 }
 
@@ -106,9 +102,9 @@ void init(void) {
 // timing & delay functions
 ///////////////////////////////////////////////////////////////////////////////
 
-volatile unsigned int downcounter;
+volatile unsigned char downcounter;
 
-void delay(unsigned int n) {
+void delay(unsigned char n) {
 
 	downcounter = n;
 
@@ -119,61 +115,63 @@ void delay(unsigned int n) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// main() - main program function
+// pseudorandom number generator
 ///////////////////////////////////////////////////////////////////////////////
-int main(void) {
-	switch(mode) {
-	case MODE_0: 
-		blink(500);
-		break;
-	case MODE_1:
-		blink(750);
-		break;
-	case MODE_2:
-		blink(1500);
-		break;
-	case MODE_MAX:
-		sleep(0);
-		break;
-	}
+
+unsigned int prand(void) {
+
+    static unsigned int prand_value = 0xDA1E; // randomly seeded ;)
+    
+    prand_value = (prand_value >> 1) ^ (-(prand_value & 1) & 0xd001);
+
+    return prand_value;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// blink(delay) - blinks with interspacing delay
+// main() - main program function
 ///////////////////////////////////////////////////////////////////////////////
-void blink (unsigned int idelay) {
- interrupt = MAXTILT;
- unsigned char i=sizeof(bbits);
+
+
+
+int main(void) {
+
+interrupt = 0;
+
+const unsigned char bbits[] = {
+    0b00011010,
+	0b00010011,
+	0b00001011,
+};
+
+unsigned char i=sizeof(bbits);
+
+int idelay=100;
+if (mode==MODE_1) idelay=1000;
+
  while (1) {
   if (++i >= sizeof(bbits)) i=0;
   PORTB = bbits[i];
-  delay(idelay);
+  _delay_ms(idelay);
+  while (!interrupt) sleep();
   interrupt--;
-  while (!interrupt) sleep(1); 
  }
+
+return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// sleep(canwake) - 1/0 Enables or disables can wake on int0
-///////////////////////////////////////////////////////////////////////////////
-void sleep(unsigned char canwake) {
+void sleep() {
 	PORTB = 0b00011011; // all LEDs off
 	// deepest sleep mode
+	cli(); // disable interrupts
 	PRR = 1<<PRTIM0 | 1<<PRADC; // power down timer/counter0 & ADC
 	BODCR = 1<<BODS | 1<<BODSE; // enable BOD disable during sleep, step 1
 	BODCR = 1<<BODS | 0<<BODSE; // step 2
 	MCUCR = 1<<PUD | 1<<SE | 1<<SM1 | 0<<SM0 | 0<<ISC01 | 0<<ISC00; // select "power down" mode
-	if (canwake) {
-     // Enable tilt switch interrupt
-	 MCUCR = 1 << ISC01;  //set INT0 as falling edge trigger     
-     GIMSK = 1 << INT0;   //enable INTO in global interrupt mask
-	 sei(); // enable global interrupts
-	}
-	else {
-		cli(); // disable interrupts, only reset can wake us.
-	}
+    // Enable tilt switch interrupt
+	MCUCR = 1 << ISC01;  //set INT0 as falling edge trigger     
+    GIMSK = 1 << INT0;   //enable INTO in global interrupt mask
+	sei(); // enable global interrupts
 	asm("sleep"); // go to sleep to save power
-	init();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,15 +179,14 @@ void sleep(unsigned char canwake) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ISR(TIM0_OVF_vect) {
+
 	downcounter--; // decrement downcounter for delay functions
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// INT0 interrupt vector, activated by INT0 tilt.
-///////////////////////////////////////////////////////////////////////////////
 ISR(INT0_vect) {
-	interrupt = MAXTILT;
+	interrupt = 25;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
 // [end-of-file]
