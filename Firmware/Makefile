@@ -310,7 +310,7 @@ gccversion :
 # Program the device.  
 program: $(TARGET).hex
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lfuse:w:0x63:m  -U hfuse:w:0xff:m
+#	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lfuse:w:0x63:m  -U hfuse:w:0xff:m
 
 setfuses : $$(TARGET).hex
 	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lfuse:w:0x63:m  -U hfuse:w:0xff:m 
@@ -320,7 +320,7 @@ resetfuses :
 
 all:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lfuse:w:0x63:m  -U hfuse:w:0xff:m
+#	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lfuse:w:0x63:m  -U hfuse:w:0xff:m
 
 
 # Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
@@ -421,8 +421,9 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) .dep/*
-
-
+	rmdir .dep
+	$(REMOVE) .elf
+	$(REMOVE) .hex
 
 # Include the dependency files.
 -include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
