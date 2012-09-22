@@ -55,7 +55,7 @@ void SetTilt(void);
 void Reset(void);
 
 // Functional dependent defines
-#define MAXBLINK 5
+#define MAXBLINK 25
 
 volatile MODE mode __attribute__ ((section (".noinit")));
 

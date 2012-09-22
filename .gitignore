@@ -165,3 +165,10 @@ pip-log.txt
 # Eagle crap
 *.b#*
 *.s#*
+
+# AVR IGNORE
+*.elf
+*.hex
+*.lss
+*.lst
+*.0
